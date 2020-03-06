@@ -72,12 +72,9 @@ function cs_global_chat_shortcode($atts = array(), $content = '')
 {
     $atts = shortcode_atts(array(
         'global' => 0,
-        'leftPanelBgColor' => '#fff',
-        'leftPanelUsersColor' => '#fff',
-        'chatWindowBgColor' => '#fff',
-        'senderBubble' => '#fff',
-        'recieverBubble' => '#fff',
         'isaudio' => 0,
+        'private_chat' => '',
+        'colorscheme' => '',
     ), $atts, 'shortcode1');
     if (is_user_logged_in()) {
         wp_enqueue_script('soachatscript', 'https://dev28.onlinetestingserver.com/soachatcentralizedWeb/js/ocs.js', array('jquery'), 1.1, true);
@@ -89,13 +86,10 @@ function cs_global_chat_shortcode($atts = array(), $content = '')
                 'chat_appkey' => get_option('chat_appkey'),
                 'chat_domain' => get_option('chat_domain'),
                 'current_user_id' => get_current_user_id(),
-                'leftPanelBgColor' => $atts['leftPanelBgColor'],
-                'leftPanelUsersColor' => $atts['leftPanelUsersColor'],
-                'chatWindowBgColor' => $atts['chatWindowBgColor'],
-                'senderBubble' => $atts['senderBubble'],
-                'recieverBubble' => $atts['recieverBubble'],
                 'global' => $atts['global'],
                 'onlyAudio' => $atts['isaudio'],
+                'colors_cheme' => $atts['colorscheme'],
+                'admin_selection' => get_option('admin_selection'),
             )
         );
         $content = '<div id="mychatwindow"></div>';

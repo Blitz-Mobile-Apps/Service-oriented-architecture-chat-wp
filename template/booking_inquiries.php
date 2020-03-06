@@ -1,6 +1,6 @@
 <?php do_action('easy_booking');
 $soachat = new Soachat();
-if (!empty($_POST)) {
+if (!empty($_POST['admincredentials'])) {
     update_option('chat_appid', $_POST['appid']);
     update_option('chat_appkey', $_POST['appkey']);
     update_option('chat_secretkey', $_POST['secretkey']);
@@ -15,13 +15,30 @@ if (!empty($_GET['chatid'])){
 }
 
 
+//admin selection
+if (isset($_POST['admin_selection'])){
+    $admin = $_POST['admin_only'];
+    if (!empty($admin)){
+        $user = get_userdata($admin);
+        if (get_option('chat_type') == 1){
+            $video = 0;
+        }else{
+            $video = 1;
+        }
+        $response = $soachat::addUser($admin, $user->data->display_name, null, $video);
+    }
+    update_option('admin_selection', $admin);
+    echo '<div class="notice notice-success is-dismissible"><p>Admin Added!</p></div>';
+}
 
-
+//get all user
+$getusers = get_users( array( 'fields' => array( 'ID', 'display_name' ) ) );
 ?>
 <div class="card mb-3">
     <h3 class="card-header">Chat Credentials</h3>
     <div class="card-body">
         <form method="post">
+            <input type="hidden" name="admincredentials" value="1">
             <div class="form-group row">
                 <label for="staticEmail" class="col-sm-2 col-form-label">App ID</label>
                 <div class="col-sm-10">
@@ -92,7 +109,7 @@ if (!empty($_GET['chatid'])){
                     ?>
 
                     <tr class="table-active">
-                        <th scope="row"><?php echo $key['id']; ?></th>
+                        <th scope="row"><?php echo $key['uid']; ?></th>
                         <td><?php echo $key['name']; ?></td>
                         <td><?php
                             if ($key['isVideoIncluded'] == 1) {
@@ -143,35 +160,13 @@ if (!empty($_GET['chatid'])){
                 </div>
             </div>
             <div class="form-group row">
-                <label for="staticEmail" class="col-sm-2 col-form-label"><p>leftPanelBgColor</p></label>
+                <label for="staticEmail" class="col-sm-2 col-form-label"><p>Color Scheme</p></label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control-plaintext" value="#fff" name="leftPanelBgColor">
+                    <input type="text" class="form-control-plaintext" value="741e88" name="colorScheme">
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="staticEmail" class="col-sm-2 col-form-label"><p>leftPanelUsersColor?</p></label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control-plaintext" value="#fff" name="leftPanelUsersColor">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="staticEmail" class="col-sm-2 col-form-label"><p>chatWindowBgColor?</p></label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control-plaintext" value="#fff" name="chatWindowBgColor">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="staticEmail" class="col-sm-2 col-form-label"><p>senderBubble?</p></label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control-plaintext" value="#fff" name="senderBubble">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="staticEmail" class="col-sm-2 col-form-label"><p>recieverBubble?</p></label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control-plaintext" value="#fff" name="recieverBubble">
-                </div>
-            </div>
+
+
         </form>
         <div class="form-group row">
             <label for="my_submit" class="col-sm-2 col-form-label"></label>
@@ -191,6 +186,35 @@ if (!empty($_GET['chatid'])){
         <br><br>
         <p>Add firends:</p>
         <code>[add-friend]</code>
+    </div>
+</div>
+
+
+<div class="card mb-3 my_shortcodeee">
+    <h3 class="card-header">Choose Admin</h3>
+    <div class="card-body">
+        <form action="" method="post">
+            <input type="hidden" name="admin_selection" value="1">
+            <div class="form-group row">
+                <label for="my_submit" class="col-sm-2 col-form-label">User</label>
+                <div class="col-sm-10">
+                    <select name="admin_only" class="form-control">
+                        <?php if($getusers): ?>
+                            <option value="">Select</option>
+                            <?php foreach ($getusers as $key): ?>
+                                <option value="<?php echo $key->ID;  ?>" <?php echo selected(get_option('admin_selection'), $key->ID);  ?>><?php echo  $key->display_name;  ?></option>
+                            <?php endforeach ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="my_submit" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary" id="my_submit">Submit</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
